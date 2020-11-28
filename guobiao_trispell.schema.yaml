@@ -1,0 +1,208 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: guobiao_trispell
+  name: 国标三拼
+  version: "0.1"
+  author:
+    - Baopaau <baopaau@gmail.com>
+    
+  description: |
+    中国国家标准 GB/T 34747-2017 实现
+
+    国家标准《信息技术 汉语拼音双拼和三拼输入通用要求》 由TC28（全国信息技术标准化技术委员会）归口上报及执行 ，主管部门为国家标准化管理委员会。
+
+    主要起草单位 中国电子技术标准化研究院 、北京千钰千寻科技有限公司 。
+
+    主要起草人 鲁冠军 、何正安 、王欣 。
+
+    http://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D82608D3A7E05397BE0A0AB82A
+
+  dependencies:
+    - terra_pinyin
+
+switches:
+  - name: ascii_mode
+    states: [ 中文, ASCII ]
+    reset: 0
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - options: [ noop, simplification, trad_tw ]
+    states: [ 原形, 陆简, 臺正 ]
+    reset: 1
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+  - name: emoji_suggestion
+    states: [ ＊ , Emoji ]
+    reset: 1
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - reverse_lookup_translator
+    - table_translator@custom_phrase
+    - script_translator
+  filters:
+    - simplifier
+    - simplifier@trad_tw
+    - simplifier@emoji_suggestion
+    - uniquifier
+
+speller:
+  alphabet: zyxwvutsrqponmlkjihgfedcba
+  delimiter: " '"
+  algebra:
+    - erase/^xx$/
+    - xform/^m(\d)$/mu$1/  # 呣
+    - xform/^r5$/er5/  # 〜兒
+
+    # 声母
+    - xform/^([aoe])/A$1/
+    - xform/^zh/V/
+    - xform/^ch/I/
+    - xform/^sh/U/
+    - xform/^([a-z])/\U$1/
+
+    # 韵母
+    - xform/^([A-Z])[iu]a([1-5])$/$1Q$2/
+    - xform/^([A-Z])[vu]an([1-5])$/$1W$2/
+    - xform/^([A-Z])e([1-5])$/$1E$2/
+    - xform/^([A-Z])en([1-5])$/$1R$2/
+    - xform/^([A-Z])ie([1-5])$/$1T$2/
+    - xform/^([A-Z])(iu|uai)([1-5])$/$1Y$3/
+    - xform/^([A-Z])u([1-5])$/$1U$2/
+    - xform/^([A-Z])i([1-5])$/$1I$2/
+    - xform/^([A-Z])u?o([1-5])$/$1O$2/
+    - xform/^([A-Z])ou([1-5])$/$1P$2/
+    - xform/^([A-Z])a([1-5])$/$1A$2/
+    - xform/^([A-Z])i?ong([1-5])$/$1S$2/
+    - xform/^([A-Z])ian([1-5])$/$1D$2/
+    - xform/^([A-Z])an([1-5])$/$1F$2/
+    - xform/^([A-Z])ang([1-5])$/$1G$2/
+    - xform/^([A-Z])eng([1-5])$/$1H$2/
+    - xform/^([A-Z])ing([1-5])$/$1J$2/
+    - xform/^([A-Z])ai([1-5])$/$1K$2/
+    - xform/^([A-Z])(in|er)([1-5])$/$1L$3/
+    - xform/^([A-Z])[vu]n([1-5])$/$1Z$2/
+    - xform/^([A-Z])ve([1-5])$/$1X$2/
+    - xform/^([A-Z])ao([1-5])$/$1C$2/
+    - xform/^([A-Z])(v|ui)([1-5])$/$1V$3/
+    - xform/^([A-Z])ei([1-5])$/$1B$2/
+    - xform/^([A-Z])[iu]ang([1-5])$/$1N$2/
+    - xform/^([A-Z])iao([1-5])$/$1M$2/
+
+    # 声调
+    - xlit/12345/aesol/
+
+    - xform/^(.*)$/\L$1/
+    
+    # 简拼
+    - derive/\w$//
+    - abbrev/^([a-z]).+$/$1/
+    
+translator:
+  dictionary: terra_pinyin
+  prism: guobiao_trispell
+  spelling_hints: 7
+  strict_spelling: true
+  comment_format: &comment
+    - erase/\<xx\>/
+    - xform/\<m(\d)\>/mu$1/  # 呣
+    - xform/\<r5\>/er5/  # 〜兒
+
+    # 声母
+    - xform/\<([aoe])/A$1/
+    - xform/\<zh/V/
+    - xform/\<ch/I/
+    - xform/\<sh/U/
+    - xform/\<([a-z])/\U$1/
+
+    # 韵母
+    - xform/\<([A-Z])[iu]a([1-5])\>/$1Q$2/
+    - xform/\<([A-Z])[vu]an([1-5])\>/$1W$2/
+    - xform/\<([A-Z])e([1-5])\>/$1E$2/
+    - xform/\<([A-Z])en([1-5])\>/$1R$2/
+    - xform/\<([A-Z])ie([1-5])\>/$1T$2/
+    - xform/\<([A-Z])(iu|uai)([1-5])\>/$1Y$3/
+    - xform/\<([A-Z])u([1-5])\>/$1U$2/
+    - xform/\<([A-Z])i([1-5])\>/$1I$2/
+    - xform/\<([A-Z])u?o([1-5])\>/$1O$2/
+    - xform/\<([A-Z])ou([1-5])\>/$1P$2/
+    - xform/\<([A-Z])a([1-5])\>/$1A$2/
+    - xform/\<([A-Z])i?ong([1-5])\>/$1S$2/
+    - xform/\<([A-Z])ian([1-5])\>/$1D$2/
+    - xform/\<([A-Z])an([1-5])\>/$1F$2/
+    - xform/\<([A-Z])ang([1-5])\>/$1G$2/
+    - xform/\<([A-Z])eng([1-5])\>/$1H$2/
+    - xform/\<([A-Z])ing([1-5])\>/$1J$2/
+    - xform/\<([A-Z])ai([1-5])\>/$1K$2/
+    - xform/\<([A-Z])(in|er)([1-5])\>/$1L$3/
+    - xform/\<([A-Z])[vu]n([1-5])\>/$1Z$2/
+    - xform/\<([A-Z])ve([1-5])\>/$1X$2/
+    - xform/\<([A-Z])ao([1-5])\>/$1C$2/
+    - xform/\<([A-Z])(v|ui)([1-5])\>/$1V$3/
+    - xform/\<([A-Z])ei([1-5])\>/$1B$2/
+    - xform/\<([A-Z])[iu]ang([1-5])\>/$1N$2/
+    - xform/\<([A-Z])iao([1-5])\>/$1M$2/
+
+    # 声调
+    - xlit/12345/aesol/
+
+    - xform/^(.*)$/\L$1/
+    
+  preedit_format:
+    - xform/^(.*)$/$1 / # 顯示所有註釋
+    
+custom_phrase:
+  dictionary: ""
+  user_dict: custom_phrase
+  db_class: stabledb
+  enable_completion: false
+  enable_sentence: false
+  initial_quality: 0.8
+    
+reverse_lookup:
+  overwrite_comment: true
+  dictionary: terra_pinyin
+  prism: terra_pinyin
+  prefix: "`"
+  suffix: "'"
+  tips: 〔全拼〕
+  comment_format: *comment
+
+trad_tw:
+  option_name: trad_tw
+  opencc_config: t2tw.json
+
+emoji_suggestion:
+  opencc_config: emoji.json
+  option_name: emoji_suggestion
+  tips: all
+  
+punctuator:
+  import_preset: symbols
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    punct: "^/.*$"
+    reverse_lookup: "^`.*$"
