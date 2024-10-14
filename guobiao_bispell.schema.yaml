@@ -100,7 +100,7 @@ speller:
     - xform/^([A-Z])ai([1-5])$/$1K$2/
     - xform/^([A-Z])(in|er)([1-5])$/$1L$3/
     - xform/^([A-Z])[vu]n([1-5])$/$1Z$2/
-    - xform/^([A-Z])ve([1-5])$/$1X$2/
+    - xform/^([A-Z])ue([1-5])$/$1X$2/
     - xform/^([A-Z])ao([1-5])$/$1C$2/
     - xform/^([A-Z])(v|ui)([1-5])$/$1V$3/
     - xform/^([A-Z])ei([1-5])$/$1B$2/
@@ -154,7 +154,7 @@ translator:
     - xform/\<([A-Z])ai([1-5])\>/$1K$2/
     - xform/\<([A-Z])(in|er)([1-5])\>/$1L$3/
     - xform/\<([A-Z])[vu]n([1-5])\>/$1Z$2/
-    - xform/\<([A-Z])ve([1-5])\>/$1X$2/
+    - xform/\<([A-Z])ue([1-5])\>/$1X$2/
     - xform/\<([A-Z])ao([1-5])\>/$1C$2/
     - xform/\<([A-Z])(v|ui)([1-5])\>/$1V$3/
     - xform/\<([A-Z])ei([1-5])\>/$1B$2/
